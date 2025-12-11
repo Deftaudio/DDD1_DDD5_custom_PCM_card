@@ -27,3 +27,6 @@ Bring new life, flexibility, and creative range to your Korg DDD-1, DDD-5, and D
 * Based on PicoROM open-source project, the Deftaudio PCM Custom Card is highly modifiable for developers and power users who want to customize behavior, storage layouts, or even firmware.
 * PCM conversion scripts are highly modifiable and tweakable. Based on previous work of R-Massive and shared back with a community.
 * Fully Github documented, DIY community is welcomed.  
+
+# Documentation
+See in Documentation directory and refer to the video tutorial: https://youtu.be/BM5A2fx6TgM 
