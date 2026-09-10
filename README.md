@@ -17,7 +17,7 @@ Bring new life, flexibility, and creative range to your Korg DDD-1, DDD-5, and D
 
 * Load your own samples using the built-in USB-C interface.
 * Windows companion scripts are included for fully automated import; macOS and Linux users can run them via Parallels, VirtualBox, Wine, or similar environments.
-* Supports standard WAV files with no special requirements. Sounds are automatically trimmed, resampled, mono converted to maximize utilization of internal memory. 
+* Supports standard WAV files with no special requirements. Sounds are automatically trimmed, resampled, mono converted to maximize utilization of internal memory.
 
 ## Visual Feedback While You Work
 * A perimeter LED indicator provides clear visual activity cues while accessing or programming the card, it adds a vintage gear aesthetics.
@@ -26,7 +26,7 @@ Bring new life, flexibility, and creative range to your Korg DDD-1, DDD-5, and D
 
 * Based on PicoROM open-source project, the Deftaudio PCM Custom Card is highly modifiable for developers and power users who want to customize behavior, storage layouts, or even firmware.
 * PCM conversion scripts are highly modifiable and tweakable. Based on previous work of R-Massive and shared back with a community.
-* Fully Github documented, DIY community is welcomed.  
+* DIY community is welcomed.  
 
 # Documentation
-See in Documentation directory and refer to the video tutorial: https://youtu.be/BM5A2fx6TgM 
+See in Documentation directory and refer to the video tutorial: https://youtu.be/BM5A2fx6TgM
