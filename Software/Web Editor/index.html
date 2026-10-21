@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DDD ROM Tools</title>
+<link rel="stylesheet" href="css/ddd.css">
+<script src="js/jszip.min.js"></script>
+<script src="js/wav.js"></script>
+<script src="js/aiff.js"></script>
+<script src="js/flac.js"></script>
+<script src="js/resample_sinc.js"></script>
+<script src="js/picorom.js"></script>
+<script src="js/ddd_rom.js"></script>
+<script src="js/ddd_app.js"></script>
+</head>
+<body>
+<header>
+  <div><span class="logo">DDD ROM Tools</span><span class="subtitle">Korg DDD-1 / DDD-5 expansion sounds · PicoROM</span></div>
+  <nav aria-label="Project">
+    <button onclick="de('open_files').click()">Open files…</button>
+    <button onclick="de('open_folder').click()" title="Choose a [WAV_IN] folder with Bank1…Bank8 sub-folders">Open folder…</button>
+    <button onclick="saveProjectZip()">Save project ZIP…</button>
+    <button onclick="de('help_dialog').showModal()">Help</button>
+  </nav>
+</header>
+
+<main>
+  <details class="panel" id="settings_panel">
+    <summary>Conversion settings <span class="muted" id="settings_summary"></span></summary>
+    <div class="toolbar">
+      <label>Sample rate
+        <select id="set_rate_preset">
+          <option value="25272" selected>25272 Hz · DDD native</option>
+          <option value="44100">44100 Hz · Deftaudio (tune ≈ 64)</option>
+          <option value="25640">25640 Hz · original v0.3 (tune ≈ 0)</option>
+          <option value="custom">Custom…</option>
+        </select>
+      </label>
+      <input class="numeric" id="set_rate" type="number" min="8000" max="96000" step="1" value="25272" aria-label="Custom sample rate" hidden>
+      <label>Layout
+        <select id="set_layout">
+          <option value="auto">Auto-fit by length (1 KiB slots)</option>
+          <option value="classic">Classic equal slots (1X…8X scripts)</option>
+        </select>
+      </label>
+      <label>Decay curve
+        <select id="set_curve" title="Shape of the fade-out when a sound's D handle is used">
+          <option value="exp">Exponential</option>
+          <option value="linear">Linear</option>
+          <option value="sox">Parabolic (SoX p)</option>
+        </select>
+      </label>
+      <label>Dither
+        <select id="set_dither">
+          <option value="rpdf">Rectangular (sox dither -r)</option>
+          <option value="tpdf">Triangular</option>
+          <option value="none">None</option>
+        </select>
+      </label>
+    </div>
+    <div class="toolbar">
+      <label>Normalize <input class="numeric" id="set_norm" type="number" step="0.1" max="0" value="-0.3"> dBFS</label>
+      <label>Silence trim <input class="numeric" id="set_silence" type="number" step="0.01" min="0" max="50" value="0.2"> %</label>
+      <label title="Minimum fade-in for every sound">Fade in <input class="numeric" id="set_fadein" type="number" min="0" max="10000" value="2"> samples</label>
+      <label title="Minimum fade-out for every sound">Fade out <input class="numeric" id="set_fadeout" type="number" min="0" max="10000" value="50"> samples</label>
+      <button onclick="resetSettings()">Defaults</button>
+    </div>
+  </details>
+
+  <nav class="bank-tabs" id="bank_tabs" role="tablist" aria-label="Banks"></nav>
+
+  <section class="panel bank" id="bank_panel" aria-labelledby="bank_heading">
+    <div class="section-heading">
+      <h1 id="bank_heading">Bank 1</h1>
+      <label>Bank name <input id="bank_name" maxlength="8" placeholder="CUSTOM" spellcheck="false" autocomplete="off"></label>
+      <span class="spacer"></span>
+      <button onclick="uppercaseNames()" title="Convert this bank's names to upper case">ABC</button>
+      <button onclick="de('add_files').click()">Add sounds…</button>
+      <button onclick="clearBank()">Clear bank</button>
+    </div>
+    <div class="capacity" id="capacity" aria-label="Bank memory map"></div>
+    <div class="muted capacity-legend" id="capacity_text"></div>
+    <ol class="sounds" id="sound_list"></ol>
+    <div class="dropzone" id="dropzone">Drop audio files here (up to 8 per bank), a <code>BankN</code> or <code>[WAV_IN]</code> folder, a <code>.bin</code> bank / <code>PicoROM.BIN</code> image, or a project ZIP.</div>
+    <div class="toolbar bank-actions">
+      <button onclick="exportBankBin()">Export bank .bin…</button>
+      <span class="muted">Single 32 KiB bank for a 27256 EPROM</span>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="image_heading">
+    <div class="section-heading"><h2 id="image_heading">PicoROM image</h2><span class="muted" id="image_summary"></span></div>
+    <div class="toolbar">
+      <button class="accent" onclick="exportImage()">Export PicoROM.BIN…</button>
+      <span class="spacer"></span>
+      <button id="read_picorom" onclick="readPicoROMClicked()">Read PicoROM…</button>
+      <button class="accent" id="program_picorom" onclick="programPicoROMClicked()">Program PicoROM…</button>
+    </div>
+  </section>
+  <p id="app_status" role="status" aria-live="polite">Ready.</p>
+</main>
+
+<footer><span>DDD ROM Tools · 0.5.0</span><span>Banks are stored in image order 1, 5, 3, 7, 2, 6, 4, 8 · 32 KiB each · 2 Mbit total</span></footer>
+
+<input type="file" id="open_files" hidden multiple accept=".wav,.aif,.aiff,.aifc,.flac,.mp3,.ogg,.m4a,.bin,.rom,.zip">
+<input type="file" id="add_files" hidden multiple accept=".wav,.aif,.aiff,.aifc,.flac,.mp3,.ogg,.m4a">
+<input type="file" id="open_folder" hidden webkitdirectory>
+
+<dialog id="help_dialog">
+  <h2>Making a DDD sound bank</h2>
+  <p>Each of the 8 banks holds 1 to 8 sounds in 32 KiB (about 1.28 s at the DDD's native 25272 Hz, the default; 0.73 s at 44100 Hz). The DIP switches on the card choose the bank.</p>
+  <p><strong>Add sounds</strong> by dropping files on a bank, or open a <code>[WAV_IN]</code> folder: sub-folders <code>Bank1</code>…<code>Bank8</code> fill the matching banks, in filename order, just like <code>Deftaudio_MAIN.bat</code>. (When this page is opened directly from disk, Chrome cannot read dropped folders; use <strong>Open folder…</strong> for them.) Any WAV, AIFF, FLAC or browser-supported format works.</p>
+  <p><strong>Conversion</strong> follows the SoX scripts: mix to mono, resample, normalize to −0.3 dBFS, trim leading silence below 0.2 %, cut to length with a 2-sample fade-in and 50-sample fade-out, then dither to 8-bit unsigned.</p>
+  <p><strong>Names</strong> are 8 characters and appear on the DDD display. They start from the filename and can be edited; duplicates are fine. Drag rows, or use ↑ ↓, to change the order.</p>
+  <p><strong>Envelope.</strong> Each waveform has three handles: <em>A</em> (attack, the fade-in length), <em>D</em> (where the decay starts; the sound fades out from there to the end) and <em>End</em> (the length; shortening a sound gives its space to the others). Drag them, or type the values in ms. Click a waveform to play it, double-click (or ↺) to reset. The faint waveform shows the sound before the envelope; the brown part does not fit. The global 2-sample fade-in and 50-sample fade-out in Conversion settings always apply as a minimum.</p>
+  <p><strong>Layout.</strong> <em>Auto-fit</em> gives each sound as many 1 KiB blocks as it needs and shares the rest fairly, so short sounds leave room for long ones. <em>Classic</em> splits the bank into equal slots with the exact header values of the 1X…8X templates. Drag a sound's <em>End</em> handle to keep it shorter and give the space to the others.</p>
+  <p><strong>Output.</strong> Export a single bank for an EPROM, export <code>PicoROM.BIN</code>, or program the PicoROM directly over USB (Chrome or Edge on desktop). <strong>Read PicoROM</strong> loads the current image back, with its names, so you can change one bank and program again. Sounds read from a ROM are kept byte for byte.</p>
+  <p><strong>Keys:</strong> 1–8 play the sounds of the current bank; Escape stops.</p>
+  <form method="dialog"><button>Close</button></form>
+</dialog>
+</body>
+</html>

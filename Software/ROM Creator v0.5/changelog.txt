@@ -1,0 +1,25 @@
+v0.5 -- Bug fixes in the Deftaudio PicoROM scripts:
+        - Sound names that are the same in their first 8 characters (e.g.
+          "SP SNARE1", "SP SNARE2") no longer overwrite each other. Before, those
+          sounds were lost, the bank came out smaller than 32768 bytes and every
+          following bank in PicoROM.BIN was shifted.
+        - Sounds keep their filename order (they were re-sorted by the 8-char name).
+        - Names are always exactly 8 bytes; non-ASCII characters become "_".
+        - File names with ! & ( ) and spaces work; macOS "._" and hidden files are ignored.
+        - Failed banks are now really detected (the error check never fired) and
+          replaced with an empty bank; empty or missing BankN folders give empty banks.
+        - Every bank is checked to be 32768 bytes and PicoROM.BIN 262144 bytes before
+          programming; a failed PicoROM upload is reported.
+        - The 8 Deftaudio_PicoROM_Process_Nx.bat scripts now share one script,
+          Deftaudio_PicoROM_Process.bat (the Nx scripts still work as before).
+        - Each sound is explicitly padded/cut to its slot length (SoX's fade already
+          pads short sounds; this now also holds if that ever changes). Same in the
+          original 1X..8X EPROM scripts.
+        A cross-platform browser version is in the ddd_editor folder.
+
+v0.4 -- Added Deftaudio scripts for PicoROM support. Added support for sample names from 		filenames (8 characters).
+
+v0.3 -- Fixed noise at sample end in 2X, 6X, 8X versions.
+        Adjusted sample rate to preserve pitch; total sample time reduced to 1.27s.
+		
+v0.2 -- MAJOR BUG: Fixed missing samples in 5X, 7X, and 8X ROMs.
