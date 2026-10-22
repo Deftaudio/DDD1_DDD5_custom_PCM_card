@@ -30,7 +30,7 @@
   const CLASSIC_UNITS = [32, 16, 10, 8, 6, 5, 4, 4];
 
   const DEFAULT_SETTINGS = Object.freeze({
-    rate: 25272,          // DDD native; Deftaudio scripts use 44100, original v0.3 used 25640
+    rate: 44100,          // Deftaudio scripts; DDD native is 25272, original v0.3 used 25640
     layout: 'auto',       // 'auto' (fit by length) or 'classic' (equal slots, like the 1X..8X scripts)
     normDb: -0.3,         // sox --norm=-0.3
     silencePct: 0.2,      // sox silence 1 1 0.20%

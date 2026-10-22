@@ -31,13 +31,13 @@
     <div class="toolbar">
       <label>Sample rate
         <select id="set_rate_preset">
-          <option value="25272" selected>25272 Hz · DDD native</option>
-          <option value="44100">44100 Hz · Deftaudio (tune ≈ 64)</option>
+          <option value="44100" selected>44100 Hz · Deftaudio (tune ≈ 64)</option>
+          <option value="25272">25272 Hz · DDD native</option>
           <option value="25640">25640 Hz · original v0.3 (tune ≈ 0)</option>
           <option value="custom">Custom…</option>
         </select>
       </label>
-      <input class="numeric" id="set_rate" type="number" min="8000" max="96000" step="1" value="25272" aria-label="Custom sample rate" hidden>
+      <input class="numeric" id="set_rate" type="number" min="8000" max="96000" step="1" value="44100" aria-label="Custom sample rate" hidden>
       <label>Layout
         <select id="set_layout">
           <option value="auto">Auto-fit by length (1 KiB slots)</option>
@@ -109,7 +109,7 @@
 
 <dialog id="help_dialog">
   <h2>Making a DDD sound bank</h2>
-  <p>Each of the 8 banks holds 1 to 8 sounds in 32 KiB (about 1.28 s at the DDD's native 25272 Hz, the default; 0.73 s at 44100 Hz). The DIP switches on the card choose the bank.</p>
+  <p>Each of the 8 banks holds 1 to 8 sounds in 32 KiB (about 0.73 s at 44100 Hz, the Deftaudio default; 1.28 s at the DDD's native 25272 Hz). The DIP switches on the card choose the bank.</p>
   <p><strong>Add sounds</strong> by dropping files on a bank, or open a <code>[WAV_IN]</code> folder: sub-folders <code>Bank1</code>…<code>Bank8</code> fill the matching banks, in filename order, just like <code>Deftaudio_MAIN.bat</code>. (When this page is opened directly from disk, Chrome cannot read dropped folders; use <strong>Open folder…</strong> for them.) Any WAV, AIFF, FLAC or browser-supported format works.</p>
   <p><strong>Conversion</strong> follows the SoX scripts: mix to mono, resample, normalize to −0.3 dBFS, trim leading silence below 0.2 %, cut to length with a 2-sample fade-in and 50-sample fade-out, then dither to 8-bit unsigned.</p>
   <p><strong>Names</strong> are 8 characters and appear on the DDD display. They start from the filename and can be edited; duplicates are fine. Drag rows, or use ↑ ↓, to change the order.</p>

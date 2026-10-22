@@ -1,6 +1,6 @@
 # DDD ROM Tools
 
-Browser replacement for the Windows "Korg DDD Expansion Sound ROM Creator v0.5"
+Browser replacement for the Windows "Korg DDD Expansion Sound ROM Creator v0.4"
 scripts (`Deftaudio_MAIN.bat`, `Deftaudio_PicoROM_Process_1x…8x.bat`, SoX).
 Runs locally in Chrome/Edge; no install.
 
